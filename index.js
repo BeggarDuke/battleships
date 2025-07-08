@@ -102,6 +102,19 @@ class GameBoard {
       return 'missed';
     }
   }
+  attack(coord, player) {
+    let result = player.board.receiveAttack(coord);
+    switch (result) {
+      case 'hit':
+        this.attackBoard[coord[0]][coord[1]].gridStatus = 'hit';
+        break;
+      case 'missed':
+        this.attackBoard[coord[0]][coord[1]].gridStatus = 'missed';
+        break;
+      case 'all ships have been sank':
+          return 'You won!';
+    }
+  }
   sankAdjust(ship) {
     if (ship.isSunk === true) {
       this.shipsData.sank++;
@@ -112,6 +125,14 @@ class GameBoard {
       if (this.shipsData.sank === this.shipsData.amount) return true;
       return false;
     }
+  }
+}
+
+class Player {
+  constructor(name, type) {
+    this.name = name,
+    this.type = type;
+    this.board = new GameBoard();
   }
 }
 
@@ -147,4 +168,4 @@ class GameBoard {
 //   }
 // }
 
-export {Battleships, GameBoard};
+export {Battleships, GameBoard, Player};
