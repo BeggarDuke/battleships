@@ -1,4 +1,4 @@
-import { Battleships, GameBoard } from "./index.js"
+import { Battleships, GameBoard, Player } from "./index.js"
 
 describe('ship testing', () => {
   let type = 'Patrol Boat';
@@ -57,7 +57,9 @@ describe('gameboard\'s parameters test', () => {
     let ship =  gameBoard.defenseBoard.a[0].ship;
     let hit = gameBoard.receiveAttack(['a', 0]);
     expect(hit).toBe('hit');
+    expect(gameBoard.defenseBoard.a[0].gridStatus).toBe('hit');
     let missed = gameBoard.receiveAttack(['a', 1]);
+    expect(gameBoard.defenseBoard.a[1].gridStatus).toBe('missed');
     expect(missed).toBe('missed');
     expect(ship.hit).toBe(1);
   })
@@ -77,5 +79,21 @@ describe('gameboard\'s parameters test', () => {
     gameBoard.receiveAttack(['b', 0]);
     expect(gameBoard.defenseBoard['a'][0].gridStatus).toBe('sank');
     expect(gameBoard.defenseBoard['b'][0].gridStatus).toBe('sank');
+  })
+})
+describe('Player board interactions test', () => {
+  let player1 = new Player('Player1', 'real');
+  let player2 = new Player('Player2', 'ai');
+  test('player adding ships', () => {
+    player1.board.placeShip('Patrol Boat', ['a', 0], 'down');
+    expect(player1.board.defenseBoard['a'][0].ship).toBeInstanceOf(Battleships);
+    expect(player1.board.defenseBoard['a'][0].gridStatus).toBe('placed');
+  })
+  test('player attack another player', () => {
+    player2.board.attack(['a', 0], player1);
+    expect(player1.board.defenseBoard['a'][0].gridStatus).toBe('hit');
+    expect(player2.board.attackBoard['a'][0].gridStatus).toBe('hit');
+    let result = player2.board.attack(['b', 0], player1);
+    expect(result).toBe('You won!');
   })
 })
